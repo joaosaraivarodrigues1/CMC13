@@ -13,7 +13,8 @@ O objetivo e criar classificadores de machine learning para prever rotatividade 
 Lab2/
 ├── material/                        # Enunciado e dados (NAO MODIFICAR)
 │   ├── lab2_cmc13_2026.pdf          # Enunciado do laboratorio
-│   ├── lab2_cmc13_dados_treinamento.csv  # Dados de treinamento (440k linhas)
+│   ├── lab2_cmc13_dados_treinamento.csv  # Dados de tre
+inamento (440k linhas)
 │   └── lab2_cmc13_dados_teste.csv        # Dados de teste (64k linhas)
 ├── notebooks/                       # Codigo do projeto
 │   ├── 1_preparacao_dados.ipynb     # Preparacao e analise exploratoria
@@ -52,6 +53,40 @@ Lab2/
 - Ao criar modelos, sempre avaliar com as metricas: acuracia, precision, recall, F1-score e Kappa statistic.
 - Sempre treinar com `lab2_cmc13_dados_treinamento.csv` e testar com `lab2_cmc13_dados_teste.csv`.
 - Nao inventar dados ou resultados. Sempre executar o codigo para obter os resultados reais.
+
+### Imagens nos Notebooks
+
+- Todas as figuras geradas nos notebooks DEVEM ser salvas na pasta `relatorio/imagens/`.
+- Usar `plt.savefig('../relatorio/imagens/<nome>.png', dpi=150, bbox_inches='tight')` antes de `plt.show()`.
+- Padrao de nomes: `<num_notebook>_<secao>_<descricao>.png`. Exemplos:
+  - `1_prep_histogramas_numericas.png`
+  - `1_prep_correlacao_pearson.png`
+  - `1_prep_kde_treino_vs_teste.png`
+  - `1_prep_distribuicao_por_churn.png`
+  - `2a_trad_matriz_confusao_knn.png`
+  - `2a_trad_curva_roc_knn.png`
+  - `2b_rn_loss_por_epoca.png`
+  - `2b_rn_matriz_confusao_mlp.png`
+  - `2c_com_feature_importance_rf.png`
+  - `2c_com_matriz_confusao_rf.png`
+  - `3_comp_barplot_metricas.png`
+  - `3_comp_curvas_roc_todos.png`
+- Nunca usar espacos ou caracteres especiais nos nomes. Apenas letras minusculas, numeros e underscores.
+
+### Relatorio LaTeX
+
+- O relatorio esta em `relatorio/relatorio.tex`.
+- Para compilar (de dentro da pasta `relatorio/`):
+  ```
+  pdflatex -output-directory=ignore relatorio.tex && cp ignore/relatorio.pdf relatorio.pdf
+  ```
+  No Windows:
+  ```
+  pdflatex -output-directory=ignore relatorio.tex && copy ignore\relatorio.pdf relatorio.pdf
+  ```
+- O PDF final fica em `relatorio/relatorio.pdf`.
+- Todos os arquivos auxiliares (.aux, .log, .out, etc.) vao para `relatorio/ignore/`.
+- As imagens sao referenciadas no LaTeX apenas pelo nome (ex: `\includegraphics{1_prep_correlacao_pearson.png}`), pois o `\graphicspath` ja aponta para `imagens/`.
 
 ## Boas Praticas de GitHub para o Grupo
 
@@ -93,3 +128,4 @@ Lab2/
 - Nao faca `git push --force` na `main`.
 - Nao commite arquivos desnecessarios (dados grandes, checkpoints, `.ipynb_checkpoints/`).
 - Nao altere trabalho de colegas sem avisar.
+
