@@ -1,0 +1,29 @@
+{
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "latex-workshop.latex.recipe.default": "pdflatex x2",
+    "latex-workshop.latex.outDir": "%DIR%/ignore",
+    "latex-workshop.latex.tools": [
+        {
+            "name": "pdflatex",
+            "command": "pdflatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-output-directory=%DIR%/ignore",
+                "%DOC%"
+            ]
+        },
+        {
+            "name": "copy-pdf",
+            "command": "cmd",
+            "args": ["/c", "copy", "/y", "%DIR%\\ignore\\%DOCFILE%.pdf", "%DIR%\\%DOCFILE%.pdf"]
+        }
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "pdflatex x2",
+            "tools": ["pdflatex", "pdflatex", "copy-pdf"]
+        }
+    ]
+}

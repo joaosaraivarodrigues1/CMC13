@@ -9,8 +9,11 @@ __pycache__/
 venv/
 
 # IDE
-.vscode/
 .idea/
+
+# VS Code (manter relatorio/.vscode)
+.vscode/
+!relatorio/.vscode/
 
 # OS
 .DS_Store
