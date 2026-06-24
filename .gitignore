@@ -25,8 +25,10 @@ Thumbs.db
 # Dados processados (gerados pelo notebook 1)
 notebooks/dados_processados/
 
-# MLflow (runs locais — pesado demais para o repo)
+# MLflow (runs locais — cada membro regenera ao rodar os notebooks)
 notebooks/mlruns/
+notebooks/mlflow.db
+notebooks/mlartifacts/
 
 # Relatorio - arquivos auxiliares LaTeX
 relatorio/ignore/
