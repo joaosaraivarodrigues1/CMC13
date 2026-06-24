@@ -22,6 +22,9 @@ Thumbs.db
 # Claude Code (config local)
 .claude/
 
+# Dados processados (gerados pelo notebook 1)
+notebooks/dados_processados/
+
 # Relatorio - arquivos auxiliares LaTeX
 relatorio/ignore/
 *.aux
