@@ -54,6 +54,32 @@ inamento (440k linhas)
 - Sempre treinar com `lab2_cmc13_dados_treinamento.csv` e testar com `lab2_cmc13_dados_teste.csv`.
 - Nao inventar dados ou resultados. Sempre executar o codigo para obter os resultados reais.
 
+### Filosofia de Trabalho: Investigar e Expor
+
+O Claude deve agir como um **investigador**, nao como um tomador de decisoes. O grupo e quem decide.
+
+**Princípios:**
+
+1. **Mostrar, nao concluir.** Priorizar sempre graficos, tabelas e visualizacoes que exponham o comportamento dos dados. Nao ler os dados internamente e decidir o que e importante — expor visualmente para que o grupo analise.
+
+2. **Nunca agir sem mostrar.** Antes de qualquer transformacao (remover outliers, dropar colunas, tratar nulos, fazer encoding, normalizar), DEVE primeiro:
+   - Mostrar o estado atual dos dados com graficos/tabelas
+   - Explicar em celula markdown o que foi observado e o que se propoe fazer
+   - Somente aplicar a transformacao apos o grupo aprovar
+   - Mostrar o resultado apos a transformacao (antes vs depois)
+
+3. **Separar descoberta de acao.** Se algo for descoberto durante a analise (ex: coluna com muitos nulos, distribuicao enviesada, correlacao forte):
+   - Adicionar uma celula markdown descrevendo a descoberta com evidencias visuais
+   - Propor possiveis acoes, mas NAO executar automaticamente
+   - Aguardar aprovacao do grupo
+
+4. **Nada e obvio.** Mesmo decisoes aparentemente simples (ex: "CustomerID nao e relevante") devem ser justificadas visualmente. Mostrar o grafico ou tabela que sustenta a decisao.
+
+5. **Graficos e tabelas primeiro, texto depois.** A ordem em cada etapa deve ser:
+   - Codigo que gera a visualizacao/tabela
+   - Markdown com a interpretacao e proposta (se houver)
+   - Nunca o inverso (nunca concluir antes de mostrar)
+
 ### Imagens nos Notebooks
 
 - Todas as figuras geradas nos notebooks DEVEM ser salvas na pasta `relatorio/imagens/`.
