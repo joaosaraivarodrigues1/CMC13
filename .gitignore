@@ -25,6 +25,9 @@ Thumbs.db
 # Dados processados (gerados pelo notebook 1)
 notebooks/dados_processados/
 
+# MLflow (runs locais — pesado demais para o repo)
+notebooks/mlruns/
+
 # Relatorio - arquivos auxiliares LaTeX
 relatorio/ignore/
 *.aux
