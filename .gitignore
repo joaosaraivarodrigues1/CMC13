@@ -27,7 +27,7 @@ notebooks/dados_processados/
 
 # MLflow (runs locais — cada membro regenera ao rodar os notebooks)
 notebooks/mlruns/
-notebooks/mlflow.db
+notebooks/mlflow*.db
 notebooks/mlartifacts/
 
 # Relatorio - arquivos auxiliares LaTeX
