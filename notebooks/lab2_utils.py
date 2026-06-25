@@ -9,6 +9,7 @@ import os
 import subprocess
 import socket
 import time
+import pandas as pd
 import mlflow
 from mlflow.tracking import MlflowClient
 from sklearn.metrics import (
@@ -74,6 +75,24 @@ mlflow.set_experiment(EXPERIMENT_NAME)
 _client = MlflowClient(tracking_uri=TRACKING_URI)
 
 
+def carregar_dados(data_dir='./dados_processados'):
+    """Carrega os dados processados (parquet) e imprime informações básicas."""
+    from datetime import datetime
+
+    X_train = pd.read_parquet(f'{data_dir}/X_train.parquet')
+    y_train = pd.read_parquet(f'{data_dir}/y_train.parquet').values.ravel()
+    X_test = pd.read_parquet(f'{data_dir}/X_test.parquet')
+    y_test = pd.read_parquet(f'{data_dir}/y_test.parquet').values.ravel()
+
+    mod_time = datetime.fromtimestamp(os.path.getmtime(f'{data_dir}/X_train.parquet'))
+    print(f'Dados carregados (gerados em {mod_time.strftime("%Y-%m-%d %H:%M")})')
+    print(f'  X_train: {X_train.shape}  |  X_test: {X_test.shape}')
+    print(f'  Features: {list(X_train.columns)}')
+    print(f'  Churn rate treino: {y_train.mean():.3f}  |  teste: {y_test.mean():.3f}')
+
+    return X_train, y_train, X_test, y_test
+
+
 def avaliar_modelo(nome, y_true, y_pred):
     """Avalia um modelo, printa o relatório e retorna dict com métricas."""
     metricas = {
@@ -122,7 +141,6 @@ def iniciar_run(run_name, notebook, params, tags_extra=None):
     n_features = "?"
     features = "?"
     if os.path.exists(os.path.join(dados_dir, "X_train.parquet")):
-        import pandas as pd
         cols = pd.read_parquet(os.path.join(dados_dir, "X_train.parquet"), columns=[]).columns.tolist()
         # Ler apenas os nomes das colunas (0 linhas)
         n_features = str(len(cols))
@@ -145,8 +163,6 @@ def buscar_melhores_runs():
     Returns:
         DataFrame com uma linha por modelo, ordenado por F1-Score desc.
     """
-    import pandas as pd
-
     runs = mlflow.search_runs(
         filter_string="status = 'FINISHED'",
         order_by=["metrics.f1_score DESC"],
