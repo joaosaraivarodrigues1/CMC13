@@ -15,8 +15,10 @@ from mlflow.tracking import MlflowClient
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score,
     f1_score, cohen_kappa_score, classification_report,
-    confusion_matrix, ConfusionMatrixDisplay
+    confusion_matrix, ConfusionMatrixDisplay,
+    balanced_accuracy_score, precision_recall_curve,
 )
+import numpy as np
 
 # ── Configuração do MLflow ──────────────────────────────────────
 _NOTEBOOKS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -98,15 +100,43 @@ def avaliar_modelo(nome, y_true, y_pred):
     metricas = {
         'Modelo': nome,
         'Acuracia': accuracy_score(y_true, y_pred),
-        'Precision': precision_score(y_true, y_pred),
-        'Recall': recall_score(y_true, y_pred),
-        'F1-Score': f1_score(y_true, y_pred),
+        'Balanced_Acc': balanced_accuracy_score(y_true, y_pred),
+        'Precision': precision_score(y_true, y_pred, zero_division=0),
+        'Recall': recall_score(y_true, y_pred, zero_division=0),
+        'F1-Score': f1_score(y_true, y_pred, zero_division=0),
         'Kappa': cohen_kappa_score(y_true, y_pred),
     }
     print(f'\n=== {nome} ===')
     print(classification_report(y_true, y_pred, target_names=['Não cancelou', 'Cancelou']))
-    print(f'Kappa: {metricas["Kappa"]:.4f}')
+    print(f'Balanced Accuracy: {metricas["Balanced_Acc"]:.4f}  |  Kappa: {metricas["Kappa"]:.4f}')
     return metricas
+
+
+def calibrar_threshold(model, X_val, y_val):
+    """Encontra o threshold que maximiza F1 no conjunto de validação."""
+    if hasattr(model, 'predict_proba'):
+        probs = model.predict_proba(X_val)[:, 1]
+    elif hasattr(model, 'decision_function'):
+        scores = model.decision_function(X_val)
+        probs = (scores - scores.min()) / (scores.max() - scores.min() + 1e-9)
+    else:
+        return 0.5
+    precision, recall, thresholds = precision_recall_curve(y_val, probs)
+    f1 = 2 * precision * recall / (precision + recall + 1e-9)
+    best_idx = np.argmax(f1[:-1])  # thresholds tem len-1 em relação a precision/recall
+    return float(thresholds[best_idx])
+
+
+def predizer_com_threshold(model, X, threshold):
+    """Prediz usando threshold calibrado via predict_proba ou decision_function."""
+    if hasattr(model, 'predict_proba'):
+        probs = model.predict_proba(X)[:, 1]
+    elif hasattr(model, 'decision_function'):
+        scores = model.decision_function(X)
+        probs = (scores - scores.min()) / (scores.max() - scores.min() + 1e-9)
+    else:
+        return model.predict(X)
+    return (probs >= threshold).astype(int)
 
 
 def logar_mlflow(metricas, params, artefatos=None, tags=None):
@@ -115,7 +145,7 @@ def logar_mlflow(metricas, params, artefatos=None, tags=None):
         mlflow.log_param(k, v)
     for k, v in metricas.items():
         if k != 'Modelo':
-            mlflow.log_metric(k.lower().replace('-', '_'), v)
+            mlflow.log_metric(k.lower().replace('-', '_').replace(' ', '_'), v)
     if artefatos:
         for caminho in artefatos:
             mlflow.log_artifact(caminho)
@@ -165,7 +195,7 @@ def buscar_melhores_runs():
     """
     runs = mlflow.search_runs(
         filter_string="status = 'FINISHED'",
-        order_by=["metrics.f1_score DESC"],
+        order_by=["start_time DESC"],
     )
 
     if runs.empty:
@@ -175,6 +205,7 @@ def buscar_melhores_runs():
     colunas_map = {
         'tags.modelo': 'Modelo',
         'metrics.acuracia': 'Acuracia',
+        'metrics.balanced_acc': 'Balanced_Acc',
         'metrics.precision': 'Precision',
         'metrics.recall': 'Recall',
         'metrics.f1_score': 'F1-Score',
